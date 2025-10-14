@@ -12,7 +12,7 @@ object Sequence {
   ) extends Parser[A ~ B, T] {
     def parse(in0: Input[T], cm: Boolean) = {
       val (a, in1) = p parse (in0, cm)
-      val (b, in2) = q parse (in1, strict)
+      val (b, in2) = q parse (in1, cm || strict)
       ((a, b), in2)
     }
 

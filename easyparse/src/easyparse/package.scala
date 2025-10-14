@@ -13,8 +13,8 @@ package object easyparse {
   type Result[+A, T] = (A, Input[T])
   type Scope[K,V] = Parser.Scope[K,V]
 
-  case class Error(msg: String, in: Input[_]) extends Exception {
-    override def toString = msg + " at '" + (in take 32) + "...'"
+  case class Error(msg: String, in: Input[_], trace: List[String] = Nil) extends Exception {
+    override def toString = msg + "\nat '" + (in take 32).mkString(" ") + " ...'\n" + "from grammar rules " + trace.mkString(" -> ")
   }
 
   def fail(msg: String, in: Input[_], cm: Boolean, cause: Throwable = null) = {

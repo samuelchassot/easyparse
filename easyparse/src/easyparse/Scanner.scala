@@ -4,6 +4,8 @@
 
 package easyparse
 
+import scala.io.AnsiColor
+
 trait Token
 
 trait Scanner[T] {
@@ -37,6 +39,8 @@ object Scanner {
   }
 
   case class Keyword(name: String) extends Token with Scanner[Token] {
+    override def toString = name
+
     def scan(in: Input[Token], cm: Boolean) = {
       if (in.nonEmpty) {
         val head = in.head

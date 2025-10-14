@@ -10,6 +10,7 @@ import implicits.ListParser
 import implicits.Parser2
 import scala.util.DynamicVariable
 import scala.collection.IterableFactory
+import scala.io.AnsiColor
 
 trait Parser[+A, T] {
   p =>
@@ -103,7 +104,15 @@ trait Parser[+A, T] {
 
 object Parser {
   case class Recursive[A, T](name: String, p: () => Parser[A, T]) extends Parser[A, T] {
-    def parse(in: Input[T], cm: Boolean) = p() parse (in, cm)
+    def parse(in0: Input[T], cm: Boolean) = {
+      try {
+        p() parse (in0, cm)
+      } catch {
+        case Error(msg, in1, trace) =>
+          throw Error(msg, in1, name :: trace)
+      }
+    }
+
     override def toString = name
   }
 
@@ -119,7 +128,7 @@ object Parser {
 
   case class Value[A](name: String) extends Parser[A, Token] {
     case class Result(a: A) extends Token {
-      override def toString = name + ".Result(" + a + ")"
+      override def toString = AnsiColor.UNDERLINED + a.toString + AnsiColor.RESET // ".Result(" + a + ")"
     }
 
     def apply(a: A) = Result(a)
