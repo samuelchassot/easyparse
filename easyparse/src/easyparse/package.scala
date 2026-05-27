@@ -19,7 +19,7 @@ package object easyparse {
 
   def fail(msg: String, in: Input[_], cm: Boolean, cause: Throwable = null) = {
     if (cm) {
-      throw Error(msg, in) initCause cause
+      throw Error(msg, in).initCause(cause)
     } else {
       backtrack(msg)
     }

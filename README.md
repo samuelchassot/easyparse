@@ -45,7 +45,9 @@ Installation
 
 Dependencies
 
-- [sourcecode](https://github.com/lihaoyi/sourcecode)
+- Scala 3.8.3
+- Mill 1.1.6
+- [sourcecode](https://github.com/lihaoyi/sourcecode) 0.4.4
 
 Compile & Install
 

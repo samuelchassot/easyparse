@@ -3,9 +3,10 @@ package build
 import mill.*, scalalib.*
 
 object easyparse extends ScalaModule {
-  def scalaVersion = "2.13.18"
-  def publishVersion = "0.3.0"
-  def mvnDeps = Seq(
-    mvn"com.lihaoyi::sourcecode:0.4.4"
-  )
+	def scalaVersion = "3.8.3"
+	def publishVersion = "0.3.0"
+	def sources = Seq(PathRef(os.pwd / "easyparse" / "src"))
+	def mvnDeps = Seq(
+		mvn"com.lihaoyi::sourcecode:0.4.4"
+	)
 }
