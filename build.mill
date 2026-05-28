@@ -1,0 +1,11 @@
+package build
+
+import mill.*, scalalib.*
+
+object easyparse extends ScalaModule {
+  def scalaVersion = "2.13.18"
+  def publishVersion = "0.3.0"
+  def mvnDeps = Seq(
+    mvn"com.lihaoyi::sourcecode:0.4.4"
+  )
+}
