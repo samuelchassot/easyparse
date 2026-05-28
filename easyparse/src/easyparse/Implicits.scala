@@ -5,7 +5,7 @@
 package easyparse
 
 object implicits {
-  implicit def toKW(name: String) = KW(name)
+  implicit def toKW(name: String): Scanner.Keyword = KW(name)
 
   implicit class Apply0[R, T](f: R) {
     def apply(p: Scanner[T]): Parser[R, T] = {

@@ -45,20 +45,22 @@ object Test {
   }
 
   val id = V[String]
-  val typ = P(Sort(id))
+  val typ = P(id.map(Sort(_)))
 
   val expr: Parser[Expr, Token] =
     P(parens(expr) | bind | app)
 
   val args = P(parens(expr ~* ","))
-  val app = P(App.from(id ~ args.?))
+  val app = P((id ~ args.?()).map { case name ~ maybeArgs => App.from(name, maybeArgs) })
 
   val quant = P(Forall("forall") | Exists("exists"))
-  val formal = P(scope.declare(id ~ ":" ~ typ))
+  val formal = P((id ~ ":" ~ typ).map { case name ~ tpe => scope.declare(name, tpe) })
   val formals = P(formal ~* ",")
-  val bind = P(Bind(scope within (quant ~ formals ~ "." ~ expr)))
+  val bind = P(scope.within(quant ~ formals ~ "." ~ expr).map {
+    case (q ~ vars) ~ body => Bind(q, vars, body)
+  })
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val x = id.Result("x")
     val y = id.Result("y")
     val int = id.Result("int")

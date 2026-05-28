@@ -43,16 +43,16 @@ trait Parser[+A, T] {
   def ~@[B](q: A => Parser[B, T]): Parser[A ~ B, T] =
     new Sequence.ParserParserFun(p, q, strict = true)
 
-  def ~>@[B](q: A => Parser[B, T]): Parser[B, T] = (p ~@ q)._2
+  def ~>@[B](q: A => Parser[B, T]): Parser[B, T] = (p ~@ q)._2()
 
   def ::@[B >: A](q: A => Parser[List[B], T]): Parser[List[B], T] = (p ~@ q) map { case (a, as) =>
     a :: as
   }
 
-  def <~[B](q: Parser[B, T]): Parser[A, T] = (p ~ q)._1
-  def ~>[B](q: Parser[B, T]): Parser[B, T] = (p ~ q)._2
-  def ?<~[B](q: Parser[B, T]): Parser[A, T] = (p ?~ q)._1
-  def ?~>[B](q: Parser[B, T]): Parser[B, T] = (p ?~ q)._2
+  def <~[B](q: Parser[B, T]): Parser[A, T] = (p ~ q)._1()
+  def ~>[B](q: Parser[B, T]): Parser[B, T] = (p ~ q)._2()
+  def ?<~[B](q: Parser[B, T]): Parser[A, T] = (p ?~ q)._1()
+  def ?~>[B](q: Parser[B, T]): Parser[B, T] = (p ?~ q)._2()
 
   def |[B >: A](q: Parser[B, T]): Parser[B, T] = Parser.Choice(p, q)
   def map[B](f: A => B): Parser[B, T] = Parser.Reduce(p, f, partial = false)
@@ -66,24 +66,24 @@ trait Parser[+A, T] {
 
   def *(): Parser[List[A], T] = Parser.Repeat(p, 0, Int.MaxValue)
   def +(): Parser[List[A], T] = Parser.Repeat(p, 1, Int.MaxValue)
-  def ~*(sep: Scanner[T]): Parser[List[A], T] = p :: (sep ~ p).* | ret(Nil)
-  def ~+(sep: Scanner[T]): Parser[List[A], T] = p :: (sep ~ p).*
+  def ~*(sep: Scanner[T]): Parser[List[A], T] = p :: (sep ~ p).*() | ret(Nil)
+  def ~+(sep: Scanner[T]): Parser[List[A], T] = p :: (sep ~ p).*()
 
   def filter(f: A => Boolean): Parser[A, T] = Parser.Filter(p, f)
   def filterNot(f: A => Boolean): Parser[A, T] =
     Parser.Filter(p, (a: A) => !f(a))
 
   def reduceLeft[B >: A](f: (B, A) => B): Parser[B, T] =
-    p.+ map (_ reduceLeft f)
+    p.+().map(_ reduceLeft f)
   def reduceRight[B >: A](f: (A, B) => B): Parser[B, T] =
-    p.+ map (_ reduceRight f)
+    p.+().map(_ reduceRight f)
   def foldLeft[B](z: => Parser[B, T])(f: (B, A) => B): Parser[B, T] =
-    (z ~ p.*) map { case b ~ as => as.foldLeft(b)(f) }
+    (z ~ p.*()) map { case b ~ as => as.foldLeft(b)(f) }
   def foldRight[B](z: => Parser[B, T])(f: (A, B) => B): Parser[B, T] =
-    (p.* ~ z) map { case as ~ b => as.foldRight(b)(f) }
+    (p.*() ~ z) map { case as ~ b => as.foldRight(b)(f) }
 
   def unfold[CC[+_]](factory: IterableFactory[CC], in: Input[T]): CC[A] = {
-    val p = this.?
+    val p = this.?()
 
     val b = factory.newBuilder[(A, Input[T])]
 
